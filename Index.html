@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Tienda en Línea</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    body { background-color: #f4f4f9; padding: 20px; color: #333; }
+    
+    header { text-align: center; margin-bottom: 30px; }
+    header h1 { color: #1a252f; margin-bottom: 10px; }
+    
+    .admin-panel { background: #fff; padding: 20px; border-radius: 8px; max-width: 600px; margin: 0 auto 30px auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .admin-panel h2 { margin-bottom: 15px; font-size: 1.2rem; }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+    .form-group input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+    
+    button { background: #27ae60; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 1rem; }
+    button:hover { background: #219150; }
+    
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; max-width: 1000px; margin: 0 auto; }
+    .card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; justify-content: space-between; padding: 15px; }
+    .card img { width: 100%; height: 180px; object-fit: cover; border-radius: 4px; margin-bottom: 10px; }
+    .card h3 { font-size: 1.1rem; margin-bottom: 5px; }
+    .card .price { color: #e74c3c; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px; }
+    .card button { background: #2980b9; }
+    .card button:hover { background: #1f6391; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Mi Tienda en Línea</h1>
+    <p>Agrega tus productos y míralos publicados al instante</p>
+  </header>
+
+  <section class="admin-panel">
+    <h2>Publicar un nuevo producto</h2>
+    <form id="productForm">
+      <div class="form-group">
+        <label for="title">Nombre del Producto</label>
+        <input type="text" id="title" placeholder="Ej: Zapatillas Deportivas" required>
+      </div>
+      <div class="form-group">
+        <label for="price">Precio ($)</label>
+        <input type="number" id="price" step="0.01" placeholder="49.99" required>
+      </div>
+      <div class="form-group">
+        <label for="image">Enlace de la Imagen (URL)</label>
+        <input type="url" id="image" placeholder="https://via.placeholder.com/200" required>
+      </div>
+      <button type="submit">Agregar a la Tienda</button>
+    </form>
+  </section>
+
+  <main class="grid" id="productGrid"></main>
+
+  <script>
+    const form = document.getElementById('productForm');
+    const grid = document.getElementById('productGrid');
+
+    // Cargar productos desde el almacenamiento local al iniciar
+    const savedProducts = JSON.parse(localStorage.getItem('myProducts')) || [];
+
+    function renderProducts() {
+      grid.innerHTML = '';
+      savedProducts.forEach((product) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div>
+            <img src="${product.image}" alt="${product.title}" onerror="this.src='https://via.placeholder.com/200?text=Sin+Imagen'">
+            <h3>${product.title}</h3>
+            <p class="price">$${parseFloat(product.price).toFixed(2)}</p>
+          </div>
+          <button onclick="alert('Producto añadido al carrito')">Comprar</button>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // Guardar nuevo producto
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const newProduct = {
+        title: document.getElementById('title').value,
+        price: document.getElementById('price').value,
+        image: document.getElementById('image').value
+      };
+
+      savedProducts.push(newProduct);
+      localStorage.setItem('myProducts', JSON.stringify(savedProducts));
+      
+      renderProducts();
+      form.reset();
+    });
+
+    // Renderizar productos guardados al cargar la página
+    renderProducts();
+  </script>
+
+</body>
+</html>
